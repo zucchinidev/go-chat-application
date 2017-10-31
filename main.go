@@ -27,11 +27,12 @@ func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application.")
 	flag.Parse()
 
-	r := newRoom()
+	chatRoom := newRoom()
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login",&templateHandler{filename: "login.html"})
-	http.Handle("/room", r)
-	go r.run()
+	http.HandleFunc("/auth/", loginHandler)
+	http.Handle("/room", chatRoom)
+	go chatRoom.run()
 
 	log.Println("Starting web server on", *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
