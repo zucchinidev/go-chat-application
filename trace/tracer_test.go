@@ -19,3 +19,8 @@ func TestNew(t *testing.T) {
 		}
 	}
 }
+
+func TestOff(t *testing.T) {
+	var siletTracer Tracer = Off()
+	siletTracer.Trace("something")
+}
