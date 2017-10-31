@@ -5,7 +5,7 @@ import (
 	"strings"
 	"log"
 	"fmt"
-	"runtime"
+	"github.com/stretchr/gomniauth"
 )
 
 type authHandler struct {
@@ -35,7 +35,6 @@ func MustAuth(handler http.Handler) http.Handler {
 func loginHandler(res http.ResponseWriter, req *http.Request) {
 	path := req.URL.Path
 	defer func() {
-
 		if err := recover(); err != nil {
 			res.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(res, "Auth path %s not valid", path)
@@ -46,6 +45,20 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 	provider := segments[3]
 	switch action {
 	case "login":
+		provider, err := gomniauth.Provider(provider)
+		if err != nil {
+			msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
+			http.Error(res, msg, http.StatusInternalServerError)
+			return
+		}
+		loginUrl, err := provider.GetBeginAuthURL(nil, nil)
+		if err != nil {
+			msg := fmt.Sprintf("Error when trying to GetBeginAuthURL for %s: %s", provider, err)
+			http.Error(res, msg, http.StatusInternalServerError)
+			return
+		}
+		res.Header().Set("Location", loginUrl)
+		res.WriteHeader(http.StatusTemporaryRedirect)
 		log.Println("Todo hadler login for", provider)
 	default:
 		res.WriteHeader(http.StatusNotFound)
