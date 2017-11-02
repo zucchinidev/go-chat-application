@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http"
-	"strings"
-	"log"
 	"fmt"
 	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/common"
 	"github.com/stretchr/objx"
+	"net/http"
+	"strings"
 )
 
 type authHandler struct {
@@ -55,7 +55,7 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func providerResponseManager(res http.ResponseWriter, req *http.Request, providerName string)  {
+func providerResponseManager(res http.ResponseWriter, req *http.Request, providerName string) {
 	provider, err := gomniauth.Provider(providerName)
 	if err != nil {
 		msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
@@ -77,20 +77,27 @@ func providerResponseManager(res http.ResponseWriter, req *http.Request, provide
 		return
 	}
 
-	authCookieValue := objx.New(map[string]interface{}{
-		"name": user.Name(),
-	}).MustBase64()
-
-	http.SetCookie(res, &http.Cookie{
-		Name: "auth",
-		Value: authCookieValue,
-		Path: "/",
-	})
+	http.SetCookie(res, createCookie(createCookieValue(user)))
 	res.Header().Set("Location", "/chat")
 	res.WriteHeader(http.StatusTemporaryRedirect)
 }
 
-func providerLoginManager(res http.ResponseWriter, providerName string)  {
+func createCookieValue(user common.User) string {
+	authCookieValue := objx.New(map[string]interface{}{
+		"name": user.Name(),
+	}).MustBase64()
+	return authCookieValue
+}
+
+func createCookie(authCookieValue string) *http.Cookie {
+	return &http.Cookie{
+		Name:  "auth",
+		Value: authCookieValue,
+		Path:  "/",
+	}
+}
+
+func providerLoginManager(res http.ResponseWriter, providerName string) {
 	provider, err := gomniauth.Provider(providerName)
 	if err != nil {
 		msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
