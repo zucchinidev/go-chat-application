@@ -46,56 +46,63 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 	provider := segments[3]
 	switch action {
 	case "login":
-		provider, err := gomniauth.Provider(provider)
-		if err != nil {
-			msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
-			http.Error(res, msg, http.StatusInternalServerError)
-			return
-		}
-		loginUrl, err := provider.GetBeginAuthURL(nil, nil)
-		if err != nil {
-			msg := fmt.Sprintf("Error when trying to GetBeginAuthURL for %s: %s", provider, err)
-			http.Error(res, msg, http.StatusInternalServerError)
-			return
-		}
-		res.Header().Set("Location", loginUrl)
-		res.WriteHeader(http.StatusTemporaryRedirect)
-		log.Println("Todo hadler login for", provider)
+		providerLoginManager(res, provider)
 	case "callback":
-		provider, err := gomniauth.Provider(provider)
-		if err != nil {
-			msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
-			http.Error(res, msg, http.StatusBadRequest)
-			return
-		}
-
-		creds, err := provider.CompleteAuth(objx.MustFromURLQuery(req.URL.RawQuery))
-		if err != nil {
-			format := "Error when trying to complete auth for %s: %s"
-			http.Error(res, fmt.Sprintf(format, provider, err), http.StatusInternalServerError)
-			return
-		}
-
-		user, err := provider.GetUser(creds)
-		if err != nil {
-			format := "Error when trying to get user from %s: %s"
-			http.Error(res, fmt.Sprintf(format, provider, err), http.StatusInternalServerError)
-			return
-		}
-
-		authCookieValue := objx.New(map[string]interface{}{
-			"name": user.Name(),
-		}).MustBase64()
-
-		http.SetCookie(res, &http.Cookie{
-			Name: "auth",
-			Value: authCookieValue,
-			Path: "/",
-		})
-		res.Header().Set("Location", "/chat")
-		res.WriteHeader(http.StatusTemporaryRedirect)
+		providerResponseManager(res, req, provider)
 	default:
 		res.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(res, "Auth action %s not supported", action)
 	}
+}
+
+func providerResponseManager(res http.ResponseWriter, req *http.Request, providerName string)  {
+	provider, err := gomniauth.Provider(providerName)
+	if err != nil {
+		msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
+		http.Error(res, msg, http.StatusBadRequest)
+		return
+	}
+
+	creds, err := provider.CompleteAuth(objx.MustFromURLQuery(req.URL.RawQuery))
+	if err != nil {
+		format := "Error when trying to complete auth for %s: %s"
+		http.Error(res, fmt.Sprintf(format, provider, err), http.StatusInternalServerError)
+		return
+	}
+
+	user, err := provider.GetUser(creds)
+	if err != nil {
+		format := "Error when trying to get user from %s: %s"
+		http.Error(res, fmt.Sprintf(format, provider, err), http.StatusInternalServerError)
+		return
+	}
+
+	authCookieValue := objx.New(map[string]interface{}{
+		"name": user.Name(),
+	}).MustBase64()
+
+	http.SetCookie(res, &http.Cookie{
+		Name: "auth",
+		Value: authCookieValue,
+		Path: "/",
+	})
+	res.Header().Set("Location", "/chat")
+	res.WriteHeader(http.StatusTemporaryRedirect)
+}
+
+func providerLoginManager(res http.ResponseWriter, providerName string)  {
+	provider, err := gomniauth.Provider(providerName)
+	if err != nil {
+		msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
+		http.Error(res, msg, http.StatusInternalServerError)
+		return
+	}
+	loginUrl, err := provider.GetBeginAuthURL(nil, nil)
+	if err != nil {
+		msg := fmt.Sprintf("Error when trying to GetBeginAuthURL for %s: %s", provider, err)
+		http.Error(res, msg, http.StatusInternalServerError)
+		return
+	}
+	res.Header().Set("Location", loginUrl)
+	res.WriteHeader(http.StatusTemporaryRedirect)
 }
