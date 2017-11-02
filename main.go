@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"sync"
 	"os"
+	"github.com/stretchr/objx"
 )
 
 type templateHandler struct {
@@ -24,7 +25,15 @@ func (t *templateHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) 
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.templ.Execute(res, req)
+
+	data := map[string]interface{}{
+		"Host": req.Host,
+	}
+
+	if authCookie, err := req.Cookie("auth	"); err != nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
+	t.templ.Execute(res, data)
 }
 
 func main() {
