@@ -6,6 +6,7 @@ import (
 	"log"
 	"fmt"
 	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/objx"
 )
 
 type authHandler struct {
@@ -60,6 +61,39 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 		res.Header().Set("Location", loginUrl)
 		res.WriteHeader(http.StatusTemporaryRedirect)
 		log.Println("Todo hadler login for", provider)
+	case "callback":
+		provider, err := gomniauth.Provider(provider)
+		if err != nil {
+			msg := fmt.Sprintf("Error when trying to get provider %s, %s", provider, err)
+			http.Error(res, msg, http.StatusBadRequest)
+			return
+		}
+
+		creds, err := provider.CompleteAuth(objx.MustFromURLQuery(req.URL.RawQuery))
+		if err != nil {
+			format := "Error when trying to complete auth for %s: %s"
+			http.Error(res, fmt.Sprintf(format, provider, err), http.StatusInternalServerError)
+			return
+		}
+
+		user, err := provider.GetUser(creds)
+		if err != nil {
+			format := "Error when trying to get user from %s: %s"
+			http.Error(res, fmt.Sprintf(format, provider, err), http.StatusInternalServerError)
+			return
+		}
+
+		authCookieValue := objx.New(map[string]interface{}{
+			"name": user.Name(),
+		}).MustBase64()
+
+		http.SetCookie(res, &http.Cookie{
+			Name: "auth",
+			Value: authCookieValue,
+			Path: "/",
+		})
+		res.Header().Set("Location", "/chat")
+		res.WriteHeader(http.StatusTemporaryRedirect)
 	default:
 		res.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(res, "Auth action %s not supported", action)
