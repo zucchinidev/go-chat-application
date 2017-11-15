@@ -46,7 +46,7 @@ func main() {
 		github.New(os.Getenv("GITHUB_CLIENT_ID"), os.Getenv("GITHUB_SECRET"), "http://localhost:8080/auth/callback/github"),
 	)
 
-	chatRoom := newRoom()
+	chatRoom := newRoom(UseGravatarAvatar)
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/public/", http.StripPrefix("/public/", fs))
 	http.HandleFunc("/logout", logout)

@@ -86,6 +86,7 @@ func createCookieValue(user common.User) string {
 	authCookieValue := objx.New(map[string]interface{}{
 		"name": user.Name(),
 		"avatarUrl": user.AvatarURL(),
+		"email": user.Email(),
 	}).MustBase64()
 	return authCookieValue
 }
