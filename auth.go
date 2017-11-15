@@ -85,6 +85,7 @@ func providerResponseManager(res http.ResponseWriter, req *http.Request, provide
 func createCookieValue(user common.User) string {
 	authCookieValue := objx.New(map[string]interface{}{
 		"name": user.Name(),
+		"avatarUrl": user.AvatarURL(),
 	}).MustBase64()
 	return authCookieValue
 }

@@ -41,10 +41,13 @@ const Chat = (function () {
             const strong = document.createElement('strong');
             const span = document.createElement('span');
             const small = document.createElement('small');
+            const img = document.createElement('img');
             const msg = JSON.parse(event.data);
+            img.src = msg.AvatarUrl;
             span.textContent = msg.Message;
             strong.textContent = msg.Name + ": ";
             small.textContent = new Date(msg.When).toLocaleTimeString();
+            item.appendChild(img);
             item.appendChild(strong);
             item.appendChild(span);
             item.appendChild(small);
