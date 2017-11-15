@@ -10,6 +10,7 @@ body {
 
 header {
     background: #a0d2d2;
+    margin-bottom: 15px;
 }
 
 header::after {
@@ -40,7 +41,7 @@ nav li {
     display: inline-block;
     margin-left: 70px;
     margin-right: 20px;
-    padding-top: 25px;
+    padding-top: 15px;
     position: relative;
 }
 
@@ -75,15 +76,21 @@ input {
 
 ul#messages {
     list-style: none;
-    width: 500px;
-    border: solid 1px aquamarine;
     padding: 10px;
-    box-shadow: 1px 1px #ccc;
 }
 
 ul#messages li {
     padding: 3px 5px;
     position: relative;
+}
+
+
+ul#messages li img {
+    display: inline-block;
+    width: 40px;
+    border-radius: 50%;
+    margin-bottom: 0;
+    margin-right: 10px;
 }
 
 ul#messages li strong {
@@ -94,8 +101,8 @@ ul#messages li strong {
 }
 
 ul#messages li span {
-    width: 235px;
-    font-size: .8em;
+    width: 70%;
+    font-size: 1.6em;
     display: inline-block;
     padding-left: 15px;
     text-align: left;
@@ -109,12 +116,4 @@ ul#messages li small {
     position: absolute;
     bottom: -8px;
     right: -8px;
-}
-
-ul#messages li img {
-    display: inline-block;
-    width: 30px;
-    border-radius: 50%;
-    margin-bottom: -10px;
-    margin-right: 10px;
 }

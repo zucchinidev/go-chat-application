@@ -60,7 +60,7 @@ const Chat = (function () {
 })();
 
 window.addEventListener('load', () => {
-    const placeholder = document.querySelector('#main-section');
+    const placeholder = document.querySelector('.chat-panel');
     const chat = new Chat(placeholder, params.host);
     chat.init();
 });

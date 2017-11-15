@@ -6,6 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Chat</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body>
@@ -22,15 +23,30 @@
         </nav>
     </div>
 </header>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 col-xs-offset-2">
+            <div class="panel panel-default chat-panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Chat</h3>
+                </div>
+                <div class="panel-body">
+                    <ul id="messages"></ul>
+                </div>
 
-<section id="main-section">
-{{.UserData.name}}: <br>
-    <ul id="messages"></ul>
-    <form id="chatbox">
-        <textarea></textarea>
-        <input type="submit" value="Send">
-    </form>
-</section>
+                <div class="panel-footer">
+                    <form id="chatbox" role="form">
+                        <div class="form-group">
+                            <label for="message">Send a message as {{.UserData.name}}:</label>
+                            <textarea class="form-control" rows="3"></textarea>
+                        </div>
+                        <input type="submit" value="Send" class="btn btn-default">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     const params = {
         host: "{{.Host}}"
