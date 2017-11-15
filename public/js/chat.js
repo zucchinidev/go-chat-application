@@ -44,6 +44,7 @@ const Chat = (function () {
             const img = document.createElement('img');
             const msg = JSON.parse(event.data);
             img.src = msg.AvatarUrl;
+            img.setAttribute('title', msg.Name);
             span.textContent = msg.Message;
             strong.textContent = msg.Name + ": ";
             small.textContent = new Date(msg.When).toLocaleTimeString();
