@@ -46,12 +46,15 @@ func main() {
 		github.New(os.Getenv("GITHUB_CLIENT_ID"), os.Getenv("GITHUB_SECRET"), "http://localhost:8080/auth/callback/github"),
 	)
 
-	chatRoom := newRoom(UseGravatarAvatar)
-	fs := http.FileServer(http.Dir("public"))
-	http.Handle("/public/", http.StripPrefix("/public/", fs))
+	chatRoom := newRoom(UseFileSystemAvatar)
+	publicFolder := http.FileServer(http.Dir("public"))
+	avatarsFolder := http.FileServer(http.Dir("avatars"))
+
+	http.Handle("/public/", http.StripPrefix("/public/", publicFolder))
 	http.HandleFunc("/logout", logout)
 	http.Handle("/upload", &templateHandler{filename: "upload.html"})
 	http.HandleFunc("/uploader", uploaderHandler)
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", avatarsFolder))
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
