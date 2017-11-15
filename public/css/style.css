@@ -1,0 +1,40 @@
+input {
+    display: block;
+}
+
+ul {
+    list-style: none;
+    width: 500px;
+    border: solid 1px aquamarine;
+    padding: 10px;
+    box-shadow: 1px 1px #ccc;
+}
+li {
+    padding: 3px 5px;
+    position: relative;
+}
+
+li strong {
+    display: inline-block;
+    min-width: 130px;
+    text-align: left;
+    font-size: 1em;
+}
+
+li span {
+    width: 235px;
+    font-size: .8em;
+    display: inline-block;
+    padding-left: 15px;
+    text-align: left;
+}
+
+li small {
+    font-size: .6em;
+    display: inline-block;
+    text-align: right;
+    width: 100px;
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+}

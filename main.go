@@ -5,14 +5,14 @@ import (
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/github"
 	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/objx"
 	"github.com/stretchr/signature"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
-	"os"
-	"github.com/stretchr/objx"
 )
 
 type templateHandler struct {
@@ -47,6 +47,8 @@ func main() {
 	)
 
 	chatRoom := newRoom()
+	fs := http.FileServer(http.Dir("public"))
+	http.Handle("/public/", http.StripPrefix("/public/", fs))
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)

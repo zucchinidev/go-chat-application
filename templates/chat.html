@@ -6,89 +6,22 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Chat</title>
-    <style>
-        input {
-            display: block;
-        }
-
-        ul {
-            list-style: none;
-            width: 500px;
-            border: solid 1px aquamarine;
-            padding: 10px;
-            box-shadow: 1px 1px #ccc;
-        }
-        li {
-            padding: 3px 5px;
-            position: relative;
-        }
-
-        li strong {
-            display: inline-block;
-            min-width: 130px;
-            text-align: left;
-            font-size: 1em;
-        }
-
-        li span {
-            width: 235px;
-            font-size: .8em;
-            display: inline-block;
-            padding-left: 15px;
-            text-align: left;
-        }
-
-        li small {
-            font-size: .6em;
-            display: inline-block;
-            text-align: right;
-            width: 100px;
-            position: absolute;
-            bottom: -8px;
-            right: -8px;
-        }
-    </style>
+    <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body>
+<section id="main-section">
 {{.UserData.name}}: <br>
-<ul id="messages"></ul>
-<form id="chatbox">
-    <textarea></textarea>
-    <input type="submit" value="Send">
-</form>
+    <ul id="messages"></ul>
+    <form id="chatbox">
+        <textarea></textarea>
+        <input type="submit" value="Send">
+    </form>
+</section>
 <script>
-    const $ = document.querySelector.bind(document);
-    const textArea = $('textarea');
-    const listMessage = $('#messages');
-    const onSubmitForm = (socket, event) => {
-        event.preventDefault();
-        const textAreaValue = textArea.value;
-        if (textAreaValue === "" || !socket) {
-            return
-        }
-        socket.send(JSON.stringify({"Message": textAreaValue}));
-        textArea.value = ""
+    const params = {
+        host: "{{.Host}}"
     };
-    const socket = new WebSocket("ws://{{.Host}}/room");
-    socket.onclose = function () {
-        console.log('Connection has been closed');
-    };
-    socket.onmessage = function (event) {
-        const item = document.createElement('li');
-        const strong = document.createElement('strong');
-        const span = document.createElement('span');
-        const small = document.createElement('small');
-        const msg = JSON.parse(event.data);
-        span.textContent = msg.Message;
-        strong.textContent = msg.Name +  ": ";
-        small.textContent = new Date(msg.When).toLocaleTimeString();
-        item.appendChild(strong);
-        item.appendChild(span);
-        item.appendChild(small)
-        listMessage.appendChild(item)
-    };
-    $('#chatbox').addEventListener('submit', onSubmitForm.bind(null, socket))
-
 </script>
+<script src="/public/js/chat.js"></script>
 </body>
 </html>
