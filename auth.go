@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/objx"
 	"net/http"
 	"strings"
+	"crypto/md5"
+	"io"
 )
 
 type authHandler struct {
@@ -83,7 +85,11 @@ func providerResponseManager(res http.ResponseWriter, req *http.Request, provide
 }
 
 func createCookieValue(user common.User) string {
+	m := md5.New()
+	io.WriteString(m, strings.ToLower(user.Email()))
+	userId := fmt.Sprintf("%x", m.Sum(nil))
 	authCookieValue := objx.New(map[string]interface{}{
+		"userId": userId,
 		"name": user.Name(),
 		"avatarUrl": user.AvatarURL(),
 		"email": user.Email(),
