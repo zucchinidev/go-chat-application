@@ -33,7 +33,7 @@
         if (textAreaValue === "" || !socket) {
             return
         }
-        socket.send(textAreaValue);
+        socket.send(JSON.stringify({"Message": textAreaValue}));
         textArea.value = ""
     };
     const socket = new WebSocket("ws://{{.Host}}/room");
@@ -42,7 +42,13 @@
     };
     socket.onmessage = function (event) {
         const item = document.createElement('li');
-        item.textContent = event.data;
+        const strong = document.createElement('strong');
+        const span = document.createElement('span');
+        const msg = JSON.parse(event.data);
+        span.textContent = msg.Message;
+        strong.textContent = msg.Name +  ": ";
+        item.appendChild(strong);
+        item.appendChild(span);
         listMessage.appendChild(item)
     };
     $('#chatbox').addEventListener('submit', onSubmitForm.bind(null, socket))
