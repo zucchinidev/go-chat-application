@@ -1,10 +1,10 @@
 package main
 
 import (
-	"net/http"
 	"github.com/gorilla/websocket"
-	"log"
 	"github.com/zucchinidev/go-chat-application/trace"
+	"log"
+	"net/http"
 )
 
 const (
@@ -65,7 +65,9 @@ func (r *room) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	}
 
 	r.join <- client
-	defer func() { r.leave <- client }()
+	defer func() {
+		r.leave <- client
+	}()
 	go client.write()
 	//  call the read method in the main thread, which will block operations (keeping the connection alive) until it's time to close it.
 	client.read()
@@ -77,6 +79,6 @@ func newRoom() *room {
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
-		tracer: trace.Off(),
+		tracer:  trace.Off(),
 	}
 }
