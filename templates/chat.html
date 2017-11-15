@@ -9,6 +9,20 @@
     <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body>
+
+<header>
+    <div class="container">
+        <img src="http://fakeimg.pl/250x100/" alt="logo" class="logo">
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
 <section id="main-section">
 {{.UserData.name}}: <br>
     <ul id="messages"></ul>

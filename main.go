@@ -49,6 +49,7 @@ func main() {
 	chatRoom := newRoom()
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/public/", http.StripPrefix("/public/", fs))
+	http.HandleFunc("/logout", logout)
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
@@ -59,4 +60,15 @@ func main() {
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+}
+
+func logout(res http.ResponseWriter, req *http.Request) {
+	http.SetCookie(res, &http.Cookie{
+		Name: "auth",
+		Value: "",
+		Path: "/",
+		MaxAge: -1,
+	})
+	res.Header()["Location"] = []string{"/chat"}
+	res.WriteHeader(http.StatusTemporaryRedirect)
 }
