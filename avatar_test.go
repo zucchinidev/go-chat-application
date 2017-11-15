@@ -26,10 +26,11 @@ func TestAuthAvatar(t *testing.T) {
 
 func TestGravatarAvatar(t *testing.T) {
 	// Gravatar uses a hash of the e-mail address to generate a unique ID for each profile picture
+	// MyEmailAddress@example.com = 0bc83cb571cd1c50ba6f3e8a78ef1346
 	hashGravatar := "//www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346"
 	var gravatarAvatar GravatarAvatar
 	client := new(client)
-	client.userData = map[string]interface{}{"email": "MyEmailAddress@example.com"}
+	client.userData = map[string]interface{}{"userId": "0bc83cb571cd1c50ba6f3e8a78ef1346"}
 	url, err := gravatarAvatar.GetAvatarURL(client)
 	if err != nil {
 		t.Error("GravatarAvatar.GetAvatarURL should not return an error")
