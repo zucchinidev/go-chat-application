@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>Upload Avatar</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <img src="http://fakeimg.pl/250x100/" alt="logo" class="logo">
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="/upload">Change Avatar</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<div class="container">
+    <div class="page-header">
+        <h1>Upload picture</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form action="/uploader" method="post" role="form" enctype="multipart/form-data">
+                <input type="hidden" name="userId" value="{{.UserData.userId}}">
+                <div class="form-group">
+                    <label for="upload-avatar-control">Upload Avatar</label>
+                    <input type="file" name="avatarFile" id="upload-avatar-control">
+                    <p class="help-block">Select file.</p>
+                </div>
+                <input type="submit" value="Upload" class="btn btn-default">
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
