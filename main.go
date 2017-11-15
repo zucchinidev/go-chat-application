@@ -30,7 +30,7 @@ func (t *templateHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) 
 		"Host": req.Host,
 	}
 
-	if authCookie, err := req.Cookie("auth	"); err == nil {
+	if authCookie, err := req.Cookie("auth"); err == nil {
 		data["UserData"] = objx.MustFromBase64(authCookie.Value)
 	}
 	t.templ.Execute(res, data)
