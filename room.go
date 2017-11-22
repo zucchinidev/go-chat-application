@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
+	"github.com/stretchr/objx"
 	"github.com/zucchinidev/go-chat-application/trace"
 	"log"
 	"net/http"
-	"github.com/stretchr/objx"
 )
 
 const (
@@ -25,8 +25,6 @@ type room struct {
 	clients map[*client]bool
 	// tracer will receive trace information of activity  in the room.
 	tracer trace.Tracer
-	// avatar is how avatar information will be obtained.
-	avatar Avatar
 }
 
 func (r *room) run() {
@@ -66,9 +64,9 @@ func (r *room) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	client := &client{
-		socket: socket,
-		send:   make(chan *message, messageBufferSize),
-		room:   r,
+		socket:   socket,
+		send:     make(chan *message, messageBufferSize),
+		room:     r,
 		userData: objx.MustFromBase64(authCookie.Value),
 	}
 
@@ -81,13 +79,12 @@ func (r *room) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	client.read()
 }
 
-func newRoom(avatar Avatar) *room {
+func newRoom() *room {
 	return &room{
 		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
 		tracer:  trace.Off(),
-		avatar: avatar,
 	}
 }

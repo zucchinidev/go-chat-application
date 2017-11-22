@@ -1,6 +1,8 @@
 package main
 
 import (
+	gomniauthtest "github.com/stretchr/gomniauth/test"
+	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"os"
 	"path"
@@ -9,34 +11,37 @@ import (
 
 func TestAuthAvatar(t *testing.T) {
 	var authAvatar AuthAvatar
-	client := new(client)
-	url, err := authAvatar.GetAvatarURL(client)
+	testUser := &gomniauthtest.TestUser{
+		Mock: mock.Mock{},
+	}
+	testUser.On("AvatarURL").Return("", ErrNoAvatarURL)
+	testChatUser := &chatUser{User: testUser}
+	url, err := authAvatar.GetAvatarURL(testChatUser)
 	if err != ErrNoAvatarURL {
 		t.Error("AuthAvatar.GetAvatarURL should return ErrNoAvatarURL when no value present")
 	}
 
 	testUrl := "http://url-to-gravatar/"
-	client.userData = map[string]interface{}{
-		"avatarUrl": testUrl,
+	testUser = &gomniauthtest.TestUser{
+		Mock: mock.Mock{},
 	}
-	url, err = authAvatar.GetAvatarURL(client)
+	testChatUser.User = testUser
+	testUser.On("AvatarURL").Return(testUrl, nil)
+	url, err = authAvatar.GetAvatarURL(testChatUser)
 	if err != nil {
 		t.Error("AuthAvatar.GetAvatarURL should return no error when value present")
-	} else {
-		if url != testUrl {
-			t.Error("AuthAvatar.GetAvatarURL should return correct URL")
-		}
+	}
+
+	if url != testUrl {
+		t.Error("AuthAvatar.GetAvatarURL should return correct URL")
 	}
 }
 
 func TestGravatarAvatar(t *testing.T) {
-	// Gravatar uses a hash of the e-mail address to generate a unique ID for each profile picture
-	// MyEmailAddress@example.com = 0bc83cb571cd1c50ba6f3e8a78ef1346
-	hashGravatar := "//www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346"
+	hashGravatar := "//www.gravatar.com/avatar/abc"
 	var gravatarAvatar GravatarAvatar
-	client := new(client)
-	client.userData = map[string]interface{}{"userId": "0bc83cb571cd1c50ba6f3e8a78ef1346"}
-	url, err := gravatarAvatar.GetAvatarURL(client)
+	user := &chatUser{uniqueID: "abc"}
+	url, err := gravatarAvatar.GetAvatarURL(user)
 	if err != nil {
 		t.Error("GravatarAvatar.GetAvatarURL should not return an error")
 	}
@@ -55,9 +60,9 @@ func TestFileSystemAvatar(t *testing.T) {
 	}()
 
 	var fileSystemAvatar FileSystemAvatar
-	client := new(client)
-	client.userData = map[string]interface{}{"userid": "abc"}
-	url, err := fileSystemAvatar.GetAvatarURL(client)
+	user := &chatUser{uniqueID: "abc"}
+
+	url, err := fileSystemAvatar.GetAvatarURL(user)
 	if err != nil {
 		t.Error("FileSystemAvatar.GetAvatarURL should not return an error")
 	}

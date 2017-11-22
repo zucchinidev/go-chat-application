@@ -15,6 +15,8 @@ import (
 	"sync"
 )
 
+var avatars Avatar = UseFileSystemAvatar
+
 type templateHandler struct {
 	once     sync.Once
 	filename string
@@ -46,7 +48,7 @@ func main() {
 		github.New(os.Getenv("GITHUB_CLIENT_ID"), os.Getenv("GITHUB_SECRET"), "http://localhost:8080/auth/callback/github"),
 	)
 
-	chatRoom := newRoom(UseFileSystemAvatar)
+	chatRoom := newRoom()
 	publicFolder := http.FileServer(http.Dir("public"))
 	avatarsFolder := http.FileServer(http.Dir("avatars"))
 
@@ -69,9 +71,9 @@ func main() {
 
 func logout(res http.ResponseWriter, req *http.Request) {
 	http.SetCookie(res, &http.Cookie{
-		Name: "auth",
-		Value: "",
-		Path: "/",
+		Name:   "auth",
+		Value:  "",
+		Path:   "/",
 		MaxAge: -1,
 	})
 	res.Header()["Location"] = []string{"/chat"}
